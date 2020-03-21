@@ -1,6 +1,6 @@
-SSH Build Agents
-Pipeline
-Build Monitor View
-GitHub
-Pipeline: AWS Steps
-Slack Notification
+ssh-slaves
+workflow-aggregator
+build-monitor-plugin:
+github
+pipeline-aws
+slack
