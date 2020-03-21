@@ -1,6 +1,7 @@
-ssh-slaves
-workflow-aggregator
-build-monitor-plugin:
-github
-pipeline-aws
-slack
+ssh-slaves:1.31.1
+workflow-aggregator:latest
+build-monitor-plugin:latest
+github:latest
+pipeline-aws:latest
+pipeline-build-step:latest
+slack: 2.37
