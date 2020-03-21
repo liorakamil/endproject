@@ -4,4 +4,4 @@ build-monitor-plugin:latest
 github:latest
 pipeline-aws:latest
 pipeline-build-step:latest
-slack: 2.37
+slack:2.37
