@@ -1,7 +1,7 @@
-provider "aws" {
-  version = "~> 2.0"
-  region  = "us-east-1"
-}
+#provider "aws" {
+#  version = "~> 2.0"
+#  region  = var.region
+#}
 
 data "aws_availability_zones" "available" {
 }
@@ -20,7 +20,7 @@ module "vpc" {
   one_nat_gateway_per_az = false
 
   tags = {
-    Name = "flask VPC"
+    Name = "finproject VPC"
   }
 
   public_subnet_tags = {
@@ -59,7 +59,7 @@ resource "aws_security_group" "jenkins" {
    protocol    = "tcp"
    cidr_blocks = ["10.0.0.0/24"]
  }
-  
+
   ingress {
     from_port = 443
     to_port = 443
@@ -86,6 +86,7 @@ resource "aws_security_group" "jenkins" {
     to_port = 22
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow ssh from the world"
   }
 
   ingress {
@@ -132,7 +133,7 @@ resource "aws_instance" "jenkins_master" {
   }
   provisioner "remote-exec" {
     inline = [
-      "sudo docker run -d -p 8080:8080 -p 50000:50000 -v ${local.jenkins_home_mount} -v ${local.docker_sock_mount} --env ${local.java_opts} liorakamil/jenkins:jenkins_docker"
+      "sudo docker run -d -p 8080:8080 -p 50000:50000 -v ${local.jenkins_home_mount} -v ${local.docker_sock_mount} --env ${local.java_opts} liorakamil/jenkins:withpins"
     ]
   }
 }
@@ -164,6 +165,36 @@ resource "aws_instance" "jenkins_agent" {
   sudo service docker start
   sudo usermod -aG docker ec2-user
   EOF
+}
+
+resource "aws_db_instance" "mysql_server" {
+  allocated_storage    = 20
+  storage_type         = "gp2"
+  engine               = "mysql"
+  engine_version       = "8.0"
+  instance_class       = "db.t2.micro"
+  name                 = "mysqldb"
+  username             = var.username
+  password             = var.password
+  port                 = var.port
+  parameter_group_name = "default.mysql8.0"
+  vpc_security_group_ids = [aws_security_group.jenkins.id]
+  multi_az             = true
+  db_subnet_group_name   = aws_db_subnet_group.mysqldb.name
+  skip_final_snapshot  = true
+  
+  tags = {
+    Name       = "flask-mysql"
+  }
+}
+
+resource "aws_db_subnet_group" "mysqldb" {
+  name        = "flask-mysql"
+  subnet_ids  = module.vpc.private_subnets
+
+  tags = {
+    Name       = "flask-mysql"
+  }
 }
 
 resource "aws_iam_user" "user" {
