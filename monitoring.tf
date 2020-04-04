@@ -35,7 +35,8 @@ resource "aws_security_group" "monitor_sg" {
     from_port   = 8
     to_port     = 0
     protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Allow all SSH External
@@ -43,7 +44,8 @@ resource "aws_security_group" "monitor_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Allow all traffic to HTTP port 3000
@@ -51,7 +53,8 @@ resource "aws_security_group" "monitor_sg" {
     from_port   = 3000
     to_port     = 3000
     protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Allow all traffic to HTTP port 9090
@@ -59,7 +62,8 @@ resource "aws_security_group" "monitor_sg" {
     from_port   = 9090
     to_port     = 9090
     protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
   }
 }
 

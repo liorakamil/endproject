@@ -3,8 +3,8 @@
 #  region  = var.region
 #}
 
-data "aws_availability_zones" "available" {
-}
+#data "aws_availability_zones" "available" {
+#}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -64,28 +64,32 @@ resource "aws_security_group" "jenkins" {
     from_port = 443
     to_port = 443
     protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port = 8080
     to_port = 8080
     protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port = 5000
     to_port = 5000
     protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
     description = "Allow ssh from the world"
   }
 
@@ -93,7 +97,16 @@ resource "aws_security_group" "jenkins" {
     from_port = 2375
     to_port = 2375
     protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Allow all traffic to mysql port 3600 
+  ingress {  
+    from_port = 3306
+    to_port = 3306
+    protocol = "tcp"
+    security_groups = [aws_security_group.worker_group_mgmt_one.id]
   }
 
   tags = {
@@ -111,14 +124,23 @@ resource "aws_instance" "jenkins_master" {
   tags = {
     Name = "Jenkins Master flask"
   }
-
-  vpc_security_group_ids = [aws_security_group.jenkins.id]
+  
+  iam_instance_profile   = aws_iam_instance_profile.consul-join.name
+  vpc_security_group_ids = [aws_security_group.jenkins.id, aws_security_group.opsschool_consul.id]
 
   connection {
     host = aws_instance.jenkins_master.public_ip
     user = "ubuntu"
     private_key = tls_private_key.jenkins_key.private_key_pem
   }
+  
+  user_data = file("consul-agent.sh")
+
+# remove if works OK
+  provisioner "file" {
+    source      = "consul-agent.sh"
+    destination = "/home/ubuntu/consul-agent.sh"
+  }  
 
   provisioner "remote-exec" {
     inline = [
@@ -129,7 +151,8 @@ resource "aws_instance" "jenkins_master" {
       "sudo usermod -aG docker ubuntu",
       "mkdir -p ${local.jenkins_home}",
       "sudo chown -R 1000:1000 ${local.jenkins_home}"
-    ]
+    ] 
+
   }
   provisioner "remote-exec" {
     inline = [
@@ -182,7 +205,7 @@ resource "aws_db_instance" "mysql_server" {
   multi_az             = true
   db_subnet_group_name   = aws_db_subnet_group.mysqldb.name
   skip_final_snapshot  = true
-  
+
   tags = {
     Name       = "flask-mysql"
   }

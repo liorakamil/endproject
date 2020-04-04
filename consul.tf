@@ -96,7 +96,7 @@ resource "aws_instance" "consul_client" {
   user_data = element(data.template_cloudinit_config.consul_client.*.rendered, count.index)
 }
 
-output "servers" {
+output "consul_servers" {
   value = ["${aws_instance.consul_server.*.public_ip}"]
 }
 

@@ -1,4 +1,5 @@
 provider "aws" {
+  version = ">= 2.28.1"
   region = var.region
 }
 
@@ -26,7 +27,8 @@ ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
     description = "Allow ssh from the world"
   }
 
@@ -34,7 +36,8 @@ ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
     description = "Allow http from the world"
   }
 
@@ -42,7 +45,8 @@ ingress {
     from_port   = 8500
     to_port     = 8500
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
     description = "Allow consul UI access from the world"
   }
 
@@ -50,7 +54,8 @@ ingress {
     from_port   = 9090
     to_port     = 9090
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
     description = "Allow prometheus UI access from the world"
   }
 
