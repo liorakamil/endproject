@@ -60,6 +60,14 @@ resource "aws_security_group" "jenkins" {
    cidr_blocks = ["10.0.0.0/24"]
  }
 
+#  ingress {
+#    from_port   = 0
+#    to_port     = 0
+#    protocol    = "-1"
+#    self        = true
+#    description = "Allow all inside security group"
+#  }
+
   ingress {
     from_port = 443
     to_port = 443
@@ -196,9 +204,9 @@ resource "aws_db_instance" "mysql_server" {
   engine               = "mysql"
   engine_version       = "8.0"
   instance_class       = "db.t2.micro"
-  name                 = "mysqldb"
-  username             = var.username
-  password             = var.password
+  name                 = "users"
+  username             = var.mysql_username
+  password             = var.mysql_password
   port                 = var.port
   parameter_group_name = "default.mysql8.0"
   vpc_security_group_ids = [aws_security_group.jenkins.id]
@@ -310,4 +318,20 @@ EOF
 resource "aws_iam_user_policy_attachment" "mid-project-attach" {
   user       = aws_iam_user.user.name
   policy_arn = aws_iam_policy.policy.arn
+}
+
+data "aws_secretsmanager_secret" "flask-rds" {
+  name = "flask-rds"
+}
+
+data "aws_secretsmanager_secret_version" "flask-rds" {
+  secret_id = data.aws_secretsmanager_secret.flask-rds.id
+}
+
+output "secret_key1_USER" {
+  value = jsondecode(data.aws_secretsmanager_secret_version.flask-rds.secret_string)["USER"]
+}
+
+output "secret_key2_PASSWORD" {
+  value = jsondecode(data.aws_secretsmanager_secret_version.flask-rds.secret_string)["PASSWORD"]
 }
