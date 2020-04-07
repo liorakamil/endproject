@@ -170,7 +170,7 @@ resource "aws_instance" "jenkins_master" {
 }
 
 resource "aws_instance" "jenkins_agent" {
-  ami = "ami-00068cd7555f543d5"
+  ami = "ami-07d0cf3af28718ef8"
   instance_type = "t2.micro"
   subnet_id     = module.vpc.private_subnets[0]
   key_name = aws_key_pair.jenkins_key.key_name
@@ -183,18 +183,23 @@ resource "aws_instance" "jenkins_agent" {
 
   connection {
     host = aws_instance.jenkins_agent.public_ip
-    user = "ec2-user"
+    user = "ubuntu"
     private_key = tls_private_key.jenkins_key.private_key_pem
   }
+   
   user_data = <<-EOF
   #! /bin/bash
-  sudo yum update -y
-  sudo yum install java-1.8.0 -y
-  sudo alternatives --install /usr/bin/java java /usr/java/latest/bin/java 1
-  sudo alternatives --config java
-  sudo yum install docker git -y
-  sudo service docker start
-  sudo usermod -aG docker ec2-user
+  sudo apt-get update -y
+  #sudo yum install java-1.8.0 -y
+  sudo apt install software-properties-common apt-transport-https -y
+# sudo alternatives --install /usr/bin/java java /usr/java/latest/bin/java 1
+  sudo add-apt-repository ppa:openjdk-r/ppa -y
+# sudo alternatives --config java
+  sudo apt install openjdk-8-jdk -y
+  sudo apt install docker.io git -y
+  sudo systemctl start docker
+  sudo systemctl enable docker
+  sudo usermod -aG docker ubuntu
   EOF
 }
 
