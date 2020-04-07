@@ -108,7 +108,7 @@ variable "port" {
 #}
 
 variable "ip" {
-  default = "77.138.249.64/32"
+  default = ""
   description = "my private ip"
 }
 
