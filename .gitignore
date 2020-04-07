@@ -1,0 +1,9 @@
+*.tfplan
+keys.tf
+.idea
+.terraform
+my_ip.sh
+*.tfstate*
+.env_file
+__pycache__
+.DS_Store
