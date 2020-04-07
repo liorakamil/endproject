@@ -103,9 +103,6 @@ variable "port" {
   type        = string
   description = "The port on which the DB accepts connections."
 }
-#variable "vpc_id" {
-#  default = "vpc-08c59372"
-#}
 
 variable "ip" {
   default = ""
