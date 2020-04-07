@@ -60,13 +60,13 @@ resource "aws_security_group" "jenkins" {
    cidr_blocks = ["10.0.0.0/24"]
  }
 
-#  ingress {
-#    from_port   = 0
-#    to_port     = 0
-#    protocol    = "-1"
-#    self        = true
-#    description = "Allow all inside security group"
-#  }
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
+    description = "Allow all inside security group"
+  }
 
   ingress {
     from_port = 443
@@ -172,7 +172,7 @@ resource "aws_instance" "jenkins_master" {
 resource "aws_instance" "jenkins_agent" {
   ami = "ami-00068cd7555f543d5"
   instance_type = "t2.micro"
-  subnet_id     = module.vpc.public_subnets[0]
+  subnet_id     = module.vpc.private_subnets[0]
   key_name = aws_key_pair.jenkins_key.key_name
 
   tags = {

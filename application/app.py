@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from flaskext.mysql import MySQL
-from .config import configure
-
-import yaml
+from config import configure
 
 app = Flask(__name__)
 
