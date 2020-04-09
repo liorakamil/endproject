@@ -1,4 +1,4 @@
-node("linux") {
+node("ubuntu") {
  def customImage = ""
  stage("pull code") {
      checkout scm
