@@ -14,7 +14,6 @@ node("linux") {
  stage("verify dockers") {
      sh "docker images"
  }
-}
 
 stage('Apply Kubernetes files') {
     withAWS(region: 'us-east-1') {
