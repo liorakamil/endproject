@@ -17,7 +17,7 @@ node("linux") {
 }
 
 stage('Apply Kubernetes files') {
-    withAWS(region: 'us-east-1', credentials: 'AWSK8S') {
+    withAWS(region: 'us-east-1') {
 sh """
 aws eks update-kubeconfig --name eks-cluster-flask
 

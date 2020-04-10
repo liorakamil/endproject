@@ -133,7 +133,7 @@ resource "aws_instance" "jenkins_master" {
     Name = "Jenkins Master flask"
   }
   
-  iam_instance_profile   = aws_iam_instance_profile.consul-join.name
+  iam_instance_profile   = aws_iam_instance_profile.deploy-app.name
   vpc_security_group_ids = [aws_security_group.jenkins.id, aws_security_group.opsschool_consul.id]
 
   connection {
@@ -142,7 +142,7 @@ resource "aws_instance" "jenkins_master" {
     private_key = tls_private_key.jenkins_key.private_key_pem
   }
   
-  user_data = file("consul-agent.sh")
+  user_data = file("${path.module}/templates/jenkins.sh.tpl")
 
 # remove if works OK
   provisioner "file" {
@@ -170,7 +170,7 @@ resource "aws_instance" "jenkins_master" {
 }
 
 resource "aws_instance" "jenkins_agent" {
-  ami = "ami-07d0cf3af28718ef8"
+  ami = "ami-00068cd7555f543d5"
   instance_type = "t2.micro"
   subnet_id     = module.vpc.private_subnets[0]
   key_name = aws_key_pair.jenkins_key.key_name
@@ -180,26 +180,23 @@ resource "aws_instance" "jenkins_agent" {
   }
 
   vpc_security_group_ids = [aws_security_group.jenkins.id]
+  iam_instance_profile   = aws_iam_instance_profile.deploy-app.name
 
   connection {
     host = aws_instance.jenkins_agent.public_ip
-    user = "ubuntu"
+    user = "ec2-user"
     private_key = tls_private_key.jenkins_key.private_key_pem
   }
    
   user_data = <<-EOF
   #! /bin/bash
-  sudo apt-get update -y
-  #sudo yum install java-1.8.0 -y
-  sudo apt install software-properties-common apt-transport-https -y
-# sudo alternatives --install /usr/bin/java java /usr/java/latest/bin/java 1
-  sudo add-apt-repository ppa:openjdk-r/ppa -y
-# sudo alternatives --config java
-  sudo apt install openjdk-8-jdk -y
-  sudo apt install docker.io git -y
-  sudo systemctl start docker
-  sudo systemctl enable docker
-  sudo usermod -aG docker ubuntu
+  sudo yum update -y
+  sudo yum install java-1.8.0 -y
+  sudo alternatives --install /usr/bin/java java /usr/java/latest/bin/java 1
+  sudo alternatives --config java
+  sudo yum install docker git -y
+  sudo service docker start
+  sudo usermod -aG docker ec2-user
   EOF
 }
 
@@ -231,6 +228,40 @@ resource "aws_db_subnet_group" "mysqldb" {
   tags = {
     Name       = "flask-mysql"
   }
+}
+
+resource "aws_iam_role" "deploy-app" {
+  name = "eks-cluster-deploy-app"
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "eks.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+POLICY
+}
+
+resource "aws_iam_role_policy_attachment" "deploy-app-AmazonEKSClusterPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.deploy-app.name
+}
+
+resource "aws_iam_role_policy_attachment" "deploy-app-AmazonEKSServicePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  role       = aws_iam_role.deploy-app.name
+}
+
+# Create the instance profile
+resource "aws_iam_instance_profile" "deploy-app" {
+  name  = "eks-cluster-deploy-app"
+  role = aws_iam_role.deploy-app.name
 }
 
 resource "aws_iam_user" "user" {
