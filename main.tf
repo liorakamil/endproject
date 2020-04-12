@@ -197,6 +197,9 @@ resource "aws_instance" "jenkins_agent" {
   sudo yum install docker git -y
   sudo service docker start
   sudo usermod -aG docker ec2-user
+  curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+  chmod +x ./kubectl
+  sudo mv ./kubectl /usr/local/bin/kubectl
   EOF
 }
 
@@ -239,7 +242,7 @@ resource "aws_iam_role" "deploy-app" {
     {
       "Effect": "Allow",
       "Principal": {
-        "Service": "eks.amazonaws.com"
+        "Service": "ec2.amazonaws.com"
       },
       "Action": "sts:AssumeRole"
     }
@@ -255,6 +258,17 @@ resource "aws_iam_role_policy_attachment" "deploy-app-AmazonEKSClusterPolicy" {
 
 resource "aws_iam_role_policy_attachment" "deploy-app-AmazonEKSServicePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  role       = aws_iam_role.deploy-app.name
+}
+
+resource "aws_iam_policy" "eks-policy" {
+  name        = "eks-policy"
+  description = "EC2 access to EKS cluster"
+  policy      = file("${path.module}/templates/policies/describe-instances.json")
+}
+
+resource "aws_iam_role_policy_attachment" "deploy-app-EC2EKSAccess" {
+  policy_arn = aws_iam_policy.eks-policy.arn
   role       = aws_iam_role.deploy-app.name
 }
 
