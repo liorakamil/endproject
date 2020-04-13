@@ -1,5 +1,5 @@
 #provider "aws" {
-#  version = "~> 2.0"
+#  version = ">= 2.28.1"
 #  region  = var.region
 #}
 
@@ -142,7 +142,7 @@ resource "aws_instance" "jenkins_master" {
     private_key = tls_private_key.jenkins_key.private_key_pem
   }
   
-  user_data = file("${path.module}/templates/jenkins.sh.tpl")
+  user_data = file("consul-jenkins.sh")
 
 # remove if works OK
   provisioner "file" {
@@ -384,4 +384,12 @@ output "secret_key1_USER" {
 
 output "secret_key2_PASSWORD" {
   value = jsondecode(data.aws_secretsmanager_secret_version.flask-rds.secret_string)["PASSWORD"]
+}
+
+output "jenkins_master" {
+  value = ["${aws_instance.jenkins_master.public_ip}"]
+}
+
+output "jenkins_agent" {
+  value = ["${aws_instance.jenkins_agent.private_ip}"]
 }

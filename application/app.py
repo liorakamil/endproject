@@ -10,7 +10,6 @@ configure(app)
 mysql = MySQL()
 mysql.init_app(app)
 
-
 @app.route('/', methods=['POST'])
 def index_post():
     #fetch form data
@@ -37,6 +36,12 @@ def users():
     userDetails = cur.fetchall()
     return render_template('users.html',userDetails=userDetails)
     #return render_template('index.html')
+
+@app.before_first_request
+def config():
+    cur = mysql.get_db().cursor()
+    with open('db.sql') as f:
+        cur.execute(f.read())
 
 
 if __name__ == '__main__':
