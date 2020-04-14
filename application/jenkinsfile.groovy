@@ -54,6 +54,22 @@ spec:
         image: liorakamil/endproject:${env.BUILD_ID}
         ports:
         - containerPort: 5000
+        env:
+          - name: MYSQL_HOST
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: host
+          - name: MYSQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: username
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: password            
 EOF
 """
     }
