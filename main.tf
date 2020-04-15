@@ -25,10 +25,14 @@ module "vpc" {
 
   public_subnet_tags = {
     Name = "flask public subnets"
+    "kubernetes.io/cluster/eks-cluster-flask" = "shared"
+    "kubernetes.io/role/elb" = 1
   }
 
   private_subnet_tags = {
     Name = "flask private subnets"
+    "kubernetes.io/cluster/eks-cluster-flask" = "shared"
+    "kubernetes.io/role/internal-elb" = 1
   }
 } 
 
@@ -144,7 +148,7 @@ resource "aws_instance" "jenkins_master" {
   
   user_data = file("consul-jenkins.sh")
 
-# remove if works OK
+#remove if works OK
   provisioner "file" {
     source      = "consul-agent.sh"
     destination = "/home/ubuntu/consul-agent.sh"
@@ -215,7 +219,7 @@ resource "aws_db_instance" "mysql_server" {
   port                 = var.port
   parameter_group_name = "default.mysql8.0"
   vpc_security_group_ids = [aws_security_group.jenkins.id]
-  multi_az             = true
+  multi_az             = false
   db_subnet_group_name   = aws_db_subnet_group.mysqldb.name
   skip_final_snapshot  = true
 
@@ -264,11 +268,22 @@ resource "aws_iam_role_policy_attachment" "deploy-app-AmazonEKSServicePolicy" {
 resource "aws_iam_policy" "eks-policy" {
   name        = "eks-policy"
   description = "EC2 access to EKS cluster"
-  policy      = file("${path.module}/templates/policies/describe-instances.json")
+  policy      = file("${path.module}/templates/policies/eks-describe.json")
 }
 
 resource "aws_iam_role_policy_attachment" "deploy-app-EC2EKSAccess" {
   policy_arn = aws_iam_policy.eks-policy.arn
+  role       = aws_iam_role.deploy-app.name
+}
+
+resource "aws_iam_policy" "ekslb-policy" {
+  name        = "eksLoadBalancer-policy"
+  description = "EKS Load Balancer policy"
+  policy      = file("${path.module}/templates/policies/eks-loadbalancer.json")
+}
+
+resource "aws_iam_role_policy_attachment" "deploy-app-eksLoadBalancer" {
+  policy_arn = aws_iam_policy.ekslb-policy.arn
   role       = aws_iam_role.deploy-app.name
 }
 

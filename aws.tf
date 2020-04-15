@@ -15,11 +15,12 @@ resource "aws_security_group" "opsschool_consul" {
     self        = true
     description = "Allow all inside security group"
   }
-ingress {
+
+  ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    security_groups = [aws_security_group.jenkins.id, aws_security_group.monitor_sg.id]
+    security_groups = [aws_security_group.jenkins.id]
     description = "Allow other vpc security groups"
   }
 
@@ -57,6 +58,15 @@ ingress {
     cidr_blocks = [var.ip]
 #   cidr_blocks = ["0.0.0.0/0"]
     description = "Allow prometheus UI access from the world"
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 5601
+    protocol    = "tcp"
+    cidr_blocks = [var.ip]
+#   cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow consul UI access from the world"
   }
 
   egress {

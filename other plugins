@@ -1,0 +1,75 @@
+ace-editor
+ant
+antisamy-markup-formatter
+branch-api
+cloudbees-folder
+credentials
+cvs
+docker
+durable-task
+external-monitor-job
+git-client
+git-server
+git
+github-api
+github-branch-source
+github
+javadoc
+jquery-detached
+junit
+ldap
+mailer
+matrix-auth
+matrix-project
+maven-plugin
+metrics
+pam-auth
+plain-credentials
+scm-api
+script-security
+ssh-credentials
+ssh-slaves
+subversion
+translation
+variant
+windows-slaves
+workflow-aggregator
+workflow-api
+workflow-basic-steps
+workflow-cps-global-lib
+workflow-cps
+workflow-durable-task-step
+workflow-job
+workflow-multibranch
+workflow-scm-step
+workflow-step-api
+workflow-support
+favorite
+token-macro
+pipeline-stage-step
+blueocean
+blueocean-autofavorite
+gitlab-plugin
+
+
+
+
+user_data = <<-EOF
+  #! /bin/bash
+  sudo apt-get update -y
+  #sudo yum install java-1.8.0 -y
+  sudo apt install software-properties-common apt-transport-https -y
+# sudo alternatives --install /usr/bin/java java /usr/java/latest/bin/java 1
+  sudo add-apt-repository ppa:openjdk-r/ppa -y
+# sudo alternatives --config java
+  sudo apt install openjdk-8-jdk -y
+  sudo apt install docker.io git -y
+  sudo systemctl start docker
+  sudo systemctl enable docker
+  sudo usermod -aG docker ubuntu
+  EOF
+
+
+
+kubectl
+  aws eks --region us-east-1 update-kubeconfig --name eks-cluster-flask

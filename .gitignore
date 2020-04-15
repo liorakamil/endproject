@@ -7,3 +7,14 @@ my_ip.sh
 .env_file
 __pycache__
 .DS_Store
+variables.tf
+db/
+draft/
+eks-init.sh
+jenkins_key
+k8s-secrets
+kubeconfig_eks-cluster-flask
+maproles
+monitoring/
+password.txt
+username.txt
