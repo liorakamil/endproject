@@ -97,7 +97,7 @@ data "template_cloudinit_config" "logging" {
   }
 }
 
-resource "aws_instance" "logging_new" {
+resource "aws_instance" "logging" {
   ami                    = lookup(var.ami, var.region)
   instance_type          = "t2.medium"
   key_name               = aws_key_pair.jenkins_key.key_name
@@ -108,20 +108,20 @@ resource "aws_instance" "logging_new" {
   iam_instance_profile   = aws_iam_instance_profile.consul-join.name
   
   tags = {
-    Name = "logging-new"
+    Name = "logging"
   }
-#  user_data              = file("consul-agent.sh")
+  user_data              = data.template_cloudinit_config.logging.rendered
 
   connection {
     type = "ssh"
-    host = aws_instance.logging_new.public_ip
+    host = aws_instance.logging.public_ip
     private_key = tls_private_key.jenkins_key.private_key_pem
     user = "ubuntu"
   }
 }
 
-output "logging_new" {
-  value = ["${aws_instance.logging_new.public_ip}"]
+output "logging" {
+  value = ["${aws_instance.logging.public_ip}"]
 }
 
 

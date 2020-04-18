@@ -3,7 +3,7 @@ set -e
 
 mkdir -p /opt/logging
 tee /opt/logging/docker-compose.yml > /dev/null <<EOF
-version: "3.2"
+version: "3.4"
 x-logging:
   &default-logging
   driver: fluentd
