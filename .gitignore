@@ -15,6 +15,6 @@ jenkins_key
 k8s-secrets
 kubeconfig_eks-cluster-flask
 maproles
-monitoring/
 password.txt
 username.txt
+secrets.tf
