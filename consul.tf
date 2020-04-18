@@ -47,7 +47,6 @@ resource "aws_security_group" "logging_sg" {
     to_port = 22
     protocol = "tcp"
     cidr_blocks = [var.ip]
-#   cidr_blocks = ["0.0.0.0/0"]
     description = "Allow ssh from the world"
   }
 
@@ -65,6 +64,7 @@ resource "aws_security_group" "logging_sg" {
     to_port = 9200
     protocol = "tcp"
     security_groups = [aws_security_group.worker_group_mgmt_one.id]
+    cidr_blocks = [var.ip, "10.0.0.0/16"]
   }
 
   tags = {
@@ -85,7 +85,7 @@ resource "aws_instance" "logging" {
   tags = {
     Name = "logging"
   }
-  user_data              = file("consul-agent.sh")
+#  user_data              = file("consul-agent.sh")
 
   connection {
     type = "ssh"
@@ -113,19 +113,3 @@ output "consul_servers" {
 output "logging" {
   value = ["${aws_instance.logging.*.public_ip}"]
 }
-
-#data "aws_ami" "ubuntu" {
-#  most_recent = true
-
-#  filter {
-#    name   = "name"
-#    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
-#  }
-
-#  filter {
-#    name   = "virtualization-type"
-#    values = ["hvm"]
-#  }
-
-#  owners = ["099720109477"] # Canonical
-#}

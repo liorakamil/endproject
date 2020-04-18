@@ -145,14 +145,6 @@ resource "aws_instance" "jenkins_master" {
     user = "ubuntu"
     private_key = tls_private_key.jenkins_key.private_key_pem
   }
-  
-  user_data = file("consul-jenkins.sh")
-
-#remove if works OK
-  provisioner "file" {
-    source      = "consul-agent.sh"
-    destination = "/home/ubuntu/consul-agent.sh"
-  }  
 
   provisioner "remote-exec" {
     inline = [
@@ -218,7 +210,7 @@ resource "aws_db_instance" "mysql_server" {
   password             = var.mysql_password
   port                 = var.port
   parameter_group_name = "default.mysql8.0"
-  vpc_security_group_ids = [aws_security_group.jenkins.id]
+  vpc_security_group_ids = [aws_security_group.jenkins-sg.id]
   multi_az             = false
   db_subnet_group_name   = aws_db_subnet_group.mysqldb.name
   skip_final_snapshot  = true
