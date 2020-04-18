@@ -214,6 +214,7 @@ resource "aws_db_instance" "mysql_server" {
   multi_az             = false
   db_subnet_group_name   = aws_db_subnet_group.mysqldb.name
   skip_final_snapshot  = true
+  apply_immediately = true
 
   tags = {
     Name       = "flask-mysql"
@@ -397,6 +398,6 @@ output "jenkins_master" {
   value = ["${aws_instance.jenkins_master.public_ip}"]
 }
 
-output "jenkins_agent" {
+output "jenkins_agent1" {
   value = ["${aws_instance.jenkins_agent.private_ip}"]
 }

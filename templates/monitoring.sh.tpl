@@ -647,8 +647,8 @@ Requires=docker.service
 TimeoutStartSec=0
 Restart=always
 WorkingDirectory=/opt/monitoring
-ExecStartPre=-/usr/bin/docker-compose down --remove-orphans
-ExecStart=/usr/bin/docker-compose up
+ExecStartPre=-/usr/local/bin/docker-compose down --remove-orphans
+ExecStart=/usr/local/bin/docker-compose up
 
 [Install]
 WantedBy=multi-user.target
@@ -657,3 +657,39 @@ EOF
 systemctl daemon-reload
 systemctl enable monitoring.service
 systemctl start monitoring.service
+
+### add monitoring service to consul
+tee /etc/consul.d/monitoring-9090.json > /dev/null <<"EOF"
+{
+  "service": {
+    "id": "prometheus-9090",
+    "name": "monitoring",
+    "tags": ["prometheus"],
+    "port": 9090,
+    "checks": [
+      {
+        "id": "tcp",
+        "name": "TCP on port 9090",
+        "tcp": "localhost:9090",
+        "interval": "10s",
+        "timeout": "1s"
+      },
+      {
+        "id": "http",
+        "name": "HTTP on port 9090",
+        "http": "http://localhost:9090/",
+        "interval": "30s",
+        "timeout": "1s"
+      },
+      {
+        "id": "service",
+        "name": "prometheus",
+        "args": ["systemctl", "status", "prometheus"],
+        "interval": "60s"
+      }
+    ]
+  }
+}
+EOF
+
+consul reload

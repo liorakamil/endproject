@@ -1,7 +1,3 @@
-locals {
-  HOSTNAME = "jenkins"
-}
-
 #Monitoring Security Group
 resource "aws_security_group" "monitoring_sg" {
   name        = "monitoring-sg"
@@ -123,4 +119,8 @@ resource "aws_instance" "monitoring" {
 
 output "monitor_server_public_ip" {
   value = join(",", aws_instance.monitoring.*.public_ip)
+}
+
+output "monitoring" {
+  value = ["${aws_instance.monitoring.public_ip}"]
 }

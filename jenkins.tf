@@ -179,3 +179,11 @@ resource "aws_instance" "jenkins_agent" {
   sudo mv ./kubectl /usr/local/bin/kubectl
   EOF
 }
+
+output "master_jenkins" {
+  value = ["${aws_instance.jenkins_master.public_ip}"]
+}
+
+output "jenkins_agent" {
+  value = ["${aws_instance.jenkins_agent.private_ip}"]
+}
