@@ -81,29 +81,3 @@ EOF
 systemctl daemon-reload
 systemctl enable consul.service
 systemctl start consul.service
-
-
-### Install Node Exporter
-wget https://github.com/prometheus/node_exporter/releases/download/v${node_exporter_version}/node_exporter-${node_exporter_version}.linux-amd64.tar.gz -O /tmp/node_exporter.tgz
-mkdir -p ${prometheus_dir}
-tar zxf /tmp/node_exporter.tgz -C ${prometheus_dir}
-
-# Configure node exporter service
-tee /etc/systemd/system/node_exporter.service > /dev/null <<EOF
-[Unit]
-Description=Prometheus node exporter
-Requires=network-online.target
-After=network.target
-
-[Service]
-ExecStart=${prometheus_dir}/node_exporter-${node_exporter_version}.linux-amd64/node_exporter
-KillSignal=SIGINT
-TimeoutStopSec=5
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload
-systemctl enable node_exporter.service
-systemctl start node_exporter.service

@@ -102,7 +102,7 @@ resource "aws_security_group" "jenkins" {
     protocol = "tcp"
     cidr_blocks = [var.ip]
 #   cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow ssh from the world"
+    description = "Allow ssh from my ip"
   }
 
   ingress {
@@ -113,13 +113,13 @@ resource "aws_security_group" "jenkins" {
 #   cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow all traffic to mysql port 3600 
-  ingress {  
-    from_port = 3306
-    to_port = 3306
-    protocol = "tcp"
-    security_groups = [aws_security_group.worker_group_mgmt_one.id]
-  }
+#  # Allow all traffic to mysql port 3600 
+#  ingress {  
+#    from_port = 3306
+#    to_port = 3306
+#    protocol = "tcp"
+#    security_groups = [aws_security_group.worker_group_mgmt_one.id]
+#  }
 
   tags = {
     Name = local.jenkins_default_name
@@ -173,7 +173,7 @@ resource "aws_instance" "jenkins_master" {
   }
 }
 
-resource "aws_instance" "jenkins_agent" {
+resource "aws_instance" "jenkins_agent1" {
   ami = "ami-00068cd7555f543d5"
   instance_type = "t2.micro"
   subnet_id     = module.vpc.private_subnets[0]
@@ -187,7 +187,7 @@ resource "aws_instance" "jenkins_agent" {
   iam_instance_profile   = aws_iam_instance_profile.deploy-app.name
 
   connection {
-    host = aws_instance.jenkins_agent.public_ip
+    host = aws_instance.jenkins_agent1.public_ip
     user = "ec2-user"
     private_key = tls_private_key.jenkins_key.private_key_pem
   }

@@ -123,7 +123,7 @@ data "template_cloudinit_config" "jenkins" {
   }
 }
 
-resource "aws_instance" "jenkins_master_instance" {
+resource "aws_instance" "master_jenkins" {
   ami = "ami-07d0cf3af28718ef8"
   instance_type = "t2.micro"
   subnet_id     = module.vpc.public_subnets[0]
@@ -138,7 +138,7 @@ resource "aws_instance" "jenkins_master_instance" {
   vpc_security_group_ids = [aws_security_group.jenkins-sg.id, aws_security_group.opsschool_consul.id]
 
   connection {
-    host = aws_instance.jenkins_master_instance.public_ip
+    host = aws_instance.master_jenkins.public_ip
     user = "ubuntu"
     private_key = tls_private_key.jenkins_key.private_key_pem
   }
@@ -156,7 +156,7 @@ resource "aws_instance" "jenkins_agent" {
     Name = "Jenkins Agent"
   }
 
-  vpc_security_group_ids = [aws_security_group.jenkins.id]
+  vpc_security_group_ids = [aws_security_group.jenkins-sg.id]
   iam_instance_profile   = aws_iam_instance_profile.deploy-app.name
 
   connection {
