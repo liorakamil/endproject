@@ -45,7 +45,7 @@ tee /etc/consul.d/jenkins-8080.json > /dev/null <<"EOF"
       {
         "id": "http",
         "name": "HTTP on port 8080",
-        "http": "http://localhost:8080/",
+        "http": "http://localhost:8080",
         "interval": "30s",
         "timeout": "1s"
       },

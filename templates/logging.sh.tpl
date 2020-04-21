@@ -150,7 +150,8 @@ tee /etc/consul.d/elasticsearch-9200.json > /dev/null <<"EOF"
       {
         "id": "http",
         "name": "HTTP on port 9200",
-        "http": "http://localhost:9200/",
+        "header": {"Authorization":["Basic ${elastic_base64}"]},
+        "http": "http://localhost:9200/_cluster/health",
         "interval": "30s",
         "timeout": "1s"
       },

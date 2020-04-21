@@ -76,7 +76,9 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets: 
-        - '172.17.0.1:9100'
+        - '10.0.40.66:9100'
+        - '10.0.40.149:9100'
+
 EOF
 
 mkdir -p /opt/monitoring/grafana
@@ -683,8 +685,8 @@ tee /etc/consul.d/monitoring-9090.json > /dev/null <<"EOF"
       },
       {
         "id": "service",
-        "name": "prometheus",
-        "args": ["systemctl", "status", "prometheus"],
+        "name": "monitoring",
+        "args": ["systemctl", "status", "monitoring"],
         "interval": "60s"
       }
     ]

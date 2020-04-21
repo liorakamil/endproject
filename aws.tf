@@ -20,7 +20,7 @@ resource "aws_security_group" "opsschool_consul" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    security_groups = [aws_security_group.jenkins.id]
+    security_groups = [aws_security_group.jenkins-sg.id]
     description = "Allow other vpc security groups"
   }
 

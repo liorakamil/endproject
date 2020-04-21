@@ -58,6 +58,14 @@ resource "aws_security_group" "jenkins-sg" {
     description = "Allow ssh from my ip"
   }
 
+# Allow all traffic to Node Exporter
+  ingress {
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "TCP"
+    cidr_blocks = [var.ip]
+  }
+
   tags = {
     Name = local.jenkins_name
   }
@@ -96,12 +104,16 @@ data "template_file" "prometheus" {
     promcol_version = var.promcol_version
     prometheus_conf_dir = var.prometheus_conf_dir
     prometheus_dir = var.prometheus_dir
-    prometheus_host = "localhost"
+    prometheus_host = aws_instance.monitoring.private_ip
   }
 }
 
 data "template_file" "jenkins" {
   template = file("${path.module}/templates/jenkins.sh.tpl")
+}
+
+data "template_file" "nodeexporter" {
+  template = file("${path.module}/templates/nodeexporter.sh.tpl")
 }
 
 # Create the user-data for Jekins
@@ -120,6 +132,9 @@ data "template_cloudinit_config" "jenkins" {
   }
   part {
     content = data.template_file.jenkins.rendered
+  }
+  part {
+    content = data.template_file.nodeexporter.rendered
   }
 }
 
@@ -181,7 +196,7 @@ resource "aws_instance" "jenkins_agent" {
 }
 
 output "master_jenkins" {
-  value = ["${aws_instance.jenkins_master.public_ip}"]
+  value = ["${aws_instance.master_jenkins.public_ip}"]
 }
 
 output "jenkins_agent" {

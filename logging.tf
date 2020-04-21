@@ -43,6 +43,22 @@ resource "aws_security_group" "sg_logging" {
     cidr_blocks = [var.ip, "10.0.0.0/16"]
   }
 
+# Allow all traffic to Node Exporter
+  ingress {
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "TCP"
+    cidr_blocks = [var.ip]
+  }
+
+# Allow all traffic to Node Exporter
+  ingress {
+    from_port   = 9101
+    to_port     = 9101
+    protocol    = "TCP"
+    cidr_blocks = [var.ip]
+  }
+
   tags = {
     Name = "sg_logging"
   }
@@ -69,6 +85,10 @@ data "template_file" "logging" {
   template = file("${path.module}/templates/logging.sh.tpl")
   vars = {
     ELK_VERSION = "7.6.0"
+    elasticsearch_user = var.elastic_user
+    elasticsearch_password = var.elastic_password
+    elasticsearch_host = "localhost"
+    elastic_base64 = base64encode("${var.elastic_user}:${var.elastic_password}")
   }
 }
 
@@ -79,6 +99,10 @@ data "template_file" "fluentd-server" {
     elasticsearch_password = var.elastic_password
     elasticsearch_host = "localhost"
   }
+}
+
+data "template_file" "nodeexporter-logging" {
+  template = file("${path.module}/templates/nodeexporter.sh.tpl")
 }
 
 # Create the user-data for logging
@@ -94,6 +118,9 @@ data "template_cloudinit_config" "logging" {
   }
   part {
     content = data.template_file.fluentd-server.rendered
+  }
+  part {
+    content = data.template_file.nodeexporter-logging.rendered
   }
 }
 

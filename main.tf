@@ -45,159 +45,74 @@ locals {
   vpc_id = module.vpc.vpc_id
 }
 
-resource "aws_security_group" "jenkins" {
-  name = local.jenkins_default_name
-  description = "Allow Jenkins inbound traffic"
-  vpc_id = module.vpc.vpc_id
+#resource "aws_security_group" "jenkins" {
+#  name = local.jenkins_default_name
+#  description = "Allow Jenkins inbound traffic"
+#  vpc_id = module.vpc.vpc_id
 
-  egress {
-   from_port   = 0
-   to_port     = 0
-   protocol    = "-1"
-   cidr_blocks = ["0.0.0.0/0"]
- }
-
- egress {
-   from_port   = 22
-   to_port     = 22
-   protocol    = "tcp"
-   cidr_blocks = ["10.0.0.0/24"]
- }
-
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    self        = true
-    description = "Allow all inside security group"
-  }
-
-  ingress {
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
-    cidr_blocks = [var.ip]
-#    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port = 8080
-    to_port = 8080
-    protocol = "tcp"
-    cidr_blocks = [var.ip]
+#  egress {
+#   from_port   = 0
+#   to_port     = 0
+#   protocol    = "-1"
 #   cidr_blocks = ["0.0.0.0/0"]
-  }
+# }
 
-  ingress {
-    from_port = 5000
-    to_port = 5000
-    protocol = "tcp"
-    cidr_blocks = [var.ip]
-#   cidr_blocks = ["0.0.0.0/0"]
-  }
+# egress {
+#   from_port   = 22
+#   to_port     = 22
+#   protocol    = "tcp"
+#   cidr_blocks = ["10.0.0.0/24"]
+# }
 
-  ingress {
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = [var.ip]
-#   cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow ssh from my ip"
-  }
-
-  ingress {
-    from_port = 2375
-    to_port = 2375
-    protocol = "tcp"
-    cidr_blocks = [var.ip]
-#   cidr_blocks = ["0.0.0.0/0"]
-  }
-
-#  # Allow all traffic to mysql port 3600 
-#  ingress {  
-#    from_port = 3306
-#    to_port = 3306
-#    protocol = "tcp"
-#    security_groups = [aws_security_group.worker_group_mgmt_one.id]
+#  ingress {
+#    from_port   = 0
+#    to_port     = 0
+#    protocol    = "-1"
+#    self        = true
+#    description = "Allow all inside security group"
 #  }
 
-  tags = {
-    Name = local.jenkins_default_name
-  }
-}
+#  ingress {
+#    from_port = 443
+#    to_port = 443
+#    protocol = "tcp"
+#    cidr_blocks = [var.ip]
+#    cidr_blocks = ["0.0.0.0/0"]
+#  }
 
-resource "aws_instance" "jenkins_master" {
-  ami = "ami-07d0cf3af28718ef8"
-  instance_type = "t2.micro"
-  subnet_id     = module.vpc.public_subnets[0]
-  key_name = aws_key_pair.jenkins_key.key_name
+#  ingress {
+#    from_port = 8080
+#    to_port = 8080
+#    protocol = "tcp"
+#    cidr_blocks = [var.ip]
+#  }
 
+#  ingress {
+#    from_port = 5000
+#    to_port = 5000
+#    protocol = "tcp"
+#    cidr_blocks = [var.ip]
+#  }
 
-  tags = {
-    Name = "Jenkins Master flask"
-  }
-  
-  iam_instance_profile   = aws_iam_instance_profile.deploy-app.name
-  vpc_security_group_ids = [aws_security_group.jenkins.id, aws_security_group.opsschool_consul.id]
+#  ingress {
+#    from_port = 22
+#    to_port = 22
+#    protocol = "tcp"
+#    cidr_blocks = [var.ip]
+#    description = "Allow ssh from my ip"
+#  }
 
-  connection {
-    host = aws_instance.jenkins_master.public_ip
-    user = "ubuntu"
-    private_key = tls_private_key.jenkins_key.private_key_pem
-  }
+#  ingress {
+#    from_port = 2375
+#    to_port = 2375
+#    protocol = "tcp"
+#    cidr_blocks = [var.ip]
+#  }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update -y",
-      "sudo apt install docker.io -y",
-      "sudo systemctl start docker",
-      "sudo systemctl enable docker",
-      "sudo usermod -aG docker ubuntu",
-      "mkdir -p ${local.jenkins_home}",
-      "sudo chown -R 1000:1000 ${local.jenkins_home}"
-    ] 
-
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "sudo docker run -d -p 8080:8080 -p 50000:50000 -v ${local.jenkins_home_mount} -v ${local.docker_sock_mount} --env ${local.java_opts} liorakamil/jenkins:withpins"
-    ]
-  }
-}
-
-resource "aws_instance" "jenkins_agent1" {
-  ami = "ami-00068cd7555f543d5"
-  instance_type = "t2.micro"
-  subnet_id     = module.vpc.private_subnets[0]
-  key_name = aws_key_pair.jenkins_key.key_name
-
-  tags = {
-    Name = "Jenkins Agent flask"
-  }
-
-  vpc_security_group_ids = [aws_security_group.jenkins.id]
-  iam_instance_profile   = aws_iam_instance_profile.deploy-app.name
-
-  connection {
-    host = aws_instance.jenkins_agent1.public_ip
-    user = "ec2-user"
-    private_key = tls_private_key.jenkins_key.private_key_pem
-  }
-   
-  user_data = <<-EOF
-  #! /bin/bash
-  sudo yum update -y
-  sudo yum install java-1.8.0 -y
-  sudo alternatives --install /usr/bin/java java /usr/java/latest/bin/java 1
-  sudo alternatives --config java
-  sudo yum install docker git -y
-  sudo service docker start
-  sudo usermod -aG docker ec2-user
-  curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-  chmod +x ./kubectl
-  sudo mv ./kubectl /usr/local/bin/kubectl
-  EOF
-}
+#  tags = {
+#    Name = local.jenkins_default_name
+#  }
+#}
 
 resource "aws_db_instance" "mysql_server" {
   allocated_storage    = 20
@@ -394,10 +309,6 @@ output "secret_key2_PASSWORD" {
   value = jsondecode(data.aws_secretsmanager_secret_version.flask-rds.secret_string)["PASSWORD"]
 }
 
-output "jenkins_master" {
-  value = ["${aws_instance.jenkins_master.public_ip}"]
-}
-
-output "jenkins_agent1" {
-  value = ["${aws_instance.jenkins_agent.private_ip}"]
-}
+#output "jenkins_master" {
+#  value = ["${aws_instance.jenkins_master.public_ip}"]
+#}
