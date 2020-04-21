@@ -47,7 +47,6 @@ resource "aws_security_group" "worker_group_mgmt_one" {
     from_port = 22
     to_port   = 22
     protocol  = "tcp"
-
     cidr_blocks = [
       var.ip,
       "10.0.0.0/16",
@@ -55,6 +54,23 @@ resource "aws_security_group" "worker_group_mgmt_one" {
       "207.232.13.77/32",
       "192.168.1.0/32"
     ]
+  }
+
+  ingress {
+    from_port   = 8500
+    to_port     = 8500
+    protocol    = "tcp"
+    security_groups = [aws_security_group.opsschool_consul.id]
+    cidr_blocks = [var.ip]
+    description = "Allow consul UI access"
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+    description     = "Allow all outside security group"
   }
 }
 
