@@ -1,7 +1,9 @@
 node {
  def customImage = ""
+ def shortCommit = ""
  stage("pull code") {
      checkout scm
+     shortCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
  }
 
  stage("build docker") {
@@ -51,7 +53,7 @@ spec:
     spec:
       containers:
       - name: flask
-        image: liorakamil/endproject:${env.BUILD_ID}
+        image: liorakamil/endproject:${shortCommit}
         ports:
         - containerPort: 5000
         env:

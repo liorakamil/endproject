@@ -97,16 +97,16 @@ data "template_file" "consul" {
   }
 }
 
-data "template_file" "prometheus" {
-  template = file("${path.module}/templates/prometheus.sh.tpl")
-  vars = {
-    node_exporter_version = var.node_exporter_version
-    promcol_version = var.promcol_version
-    prometheus_conf_dir = var.prometheus_conf_dir
-    prometheus_dir = var.prometheus_dir
-    prometheus_host = aws_instance.monitoring.private_ip
-  }
-}
+#data "template_file" "prometheus" {
+#  template = file("${path.module}/templates/prometheus.sh.tpl")
+#  vars = {
+#    node_exporter_version = var.node_exporter_version
+#    promcol_version = var.promcol_version
+#    prometheus_conf_dir = var.prometheus_conf_dir
+#    prometheus_dir = var.prometheus_dir
+#    prometheus_host = aws_instance.monitoring.private_ip
+#  }
+#}
 
 data "template_file" "jenkins" {
   template = file("${path.module}/templates/jenkins.sh.tpl")
@@ -127,9 +127,9 @@ data "template_cloudinit_config" "jenkins" {
   part {
     content = data.template_file.consul.rendered
   }  
-  part {
-    content = data.template_file.prometheus.rendered
-  }
+#  part {
+#    content = data.template_file.prometheus.rendered
+#  }
   part {
     content = data.template_file.jenkins.rendered
   }

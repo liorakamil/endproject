@@ -45,17 +45,17 @@ locals {
   vpc_id = module.vpc.vpc_id
 }
 
-#resource "aws_security_group" "jenkins" {
-#  name = local.jenkins_default_name
-#  description = "Allow Jenkins inbound traffic"
-#  vpc_id = module.vpc.vpc_id
+resource "aws_security_group" "mysql_sg" {
+  name = "rds-mysql-sg"
+  description = "Allow db traffic"
+  vpc_id = module.vpc.vpc_id
 
-#  egress {
-#   from_port   = 0
-#   to_port     = 0
-#   protocol    = "-1"
-#   cidr_blocks = ["0.0.0.0/0"]
-# }
+  egress {
+   from_port   = 0
+   to_port     = 0
+   protocol    = "-1"
+   cidr_blocks = ["0.0.0.0/0"]
+ }
 
 # egress {
 #   from_port   = 22
@@ -108,11 +108,19 @@ locals {
 #    protocol = "tcp"
 #    cidr_blocks = [var.ip]
 #  }
+  # Allow all traffic to mysql port 3600 
 
-#  tags = {
-#    Name = local.jenkins_default_name
-#  }
-#}
+  ingress {  
+    from_port = 3306
+    to_port = 3306
+    protocol = "tcp"
+    security_groups = [aws_security_group.worker_group_mgmt_one.id]
+  }
+
+  tags = {
+    Name = "mysql-sg"
+  }
+}
 
 resource "aws_db_instance" "mysql_server" {
   allocated_storage    = 20
@@ -125,7 +133,7 @@ resource "aws_db_instance" "mysql_server" {
   password             = var.mysql_password
   port                 = var.port
   parameter_group_name = "default.mysql8.0"
-  vpc_security_group_ids = [aws_security_group.jenkins-sg.id]
+  vpc_security_group_ids = [aws_security_group.mysql_sg.id]
   multi_az             = false
   db_subnet_group_name   = aws_db_subnet_group.mysqldb.name
   skip_final_snapshot  = true

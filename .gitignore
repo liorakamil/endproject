@@ -18,3 +18,6 @@ maproles
 password.txt
 username.txt
 secrets.tf
+my_conf_files/
+query-elasticsearch.sh
+templates-guy/
