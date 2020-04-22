@@ -232,7 +232,7 @@ client:
 # for this to have any effect:
 # https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/#configure-stub-domain-and-upstream-dns-servers
 dns:
-  enabled: true
+  enabled: "-"
 
 ui:
   # True if you want to enable the Consul UI. The UI will run only
@@ -248,7 +248,7 @@ ui:
   # balancer (for supported K8S installations) to access the UI.
   service:
     enabled: true
-    type: "LoadBalancer"
+    type: null
     # This should be a multi-line string mapping directly to the a map of
     # the annotations to apply to the UI service
     annotations: null
