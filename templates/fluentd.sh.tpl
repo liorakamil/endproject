@@ -8,12 +8,23 @@ apt-get install make libcurl4-gnutls-dev --yes
 /opt/td-agent/embedded/bin/fluent-gem install fluent-plugin-elasticsearch
 
 ### TODO: Configure FluentD
-tee -a /etc/td-agent/td-agent.conf > /dev/null <<EOF
+tee /etc/td-agent/td-agent.conf > /dev/null <<EOF
 <source>
- type syslog
- port 5140
- tag  system
+  @type forward
+  port 24224
+  bind 0.0.0.0
 </source>
+<source>
+  @type syslog
+  port 5140
+  tag system
+</source>
+<filter **>
+  @type record_transformer
+  <record>
+    hostname "#{Socket.gethostname}"
+  </record>
+</filter>
 <match **>
   @type elasticsearch
   host ${elasticsearch_host}

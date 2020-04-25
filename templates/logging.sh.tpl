@@ -169,7 +169,7 @@ EOF
 tee /etc/consul.d/node-exporter.json > /dev/null <<"EOF"
 {
   "service":
-  {"name": "node_exporter_logging",
+  {"name": "node-exporter-logging",
    "tags": ["node_exporter", "prometheus"],
    "port": 9100
   }

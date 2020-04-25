@@ -16,7 +16,7 @@ TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker stop jenkins
 ExecStartPre=-/usr/bin/docker rm jenkins
-ExecStart=/usr/bin/docker run --rm -p 8080:8080 -p 50000:50000 --name jenkins -v /home/ubuntu/jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --env JAVA_OPTS='-Djenkins.install.runSetupWizard=false' --log-driver fluentd liorakamil/jenkins:withpins
+ExecStart=/usr/bin/docker run --rm -p 8080:8080 -p 50000:50000 --name jenkins -v /home/ubuntu/jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --env JAVA_OPTS='-Djenkins.install.runSetupWizard=false' --log-driver fluentd --log-opt tag="jenkins" liorakamil/jenkins:withpins
 
 [Install]
 WantedBy=multi-user.target
@@ -64,7 +64,7 @@ EOF
 tee /etc/consul.d/node-exporter.json > /dev/null <<"EOF"
 {
   "service":
-  {"name": "node_exporter_jenkins",
+  {"name": "node-exporter-jenkins",
    "tags": ["node_exporter", "prometheus"],
    "port": 9100
   }

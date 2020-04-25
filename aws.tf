@@ -39,6 +39,13 @@ resource "aws_security_group" "opsschool_consul" {
     description = "Allow vpc resources consul connection"
   }
   ingress {
+    from_port   = 8600
+    to_port     = 8600
+    protocol    = "udp"
+    cidr_blocks = ["10.0.0.0/16"]
+    description = "Allow vpc resources consul connection"
+  }  
+  ingress {
     from_port   = 8300
     to_port     = 8300
     protocol    = "tcp"
@@ -134,7 +141,7 @@ resource "aws_security_group" "opsschool_consul" {
     description = "Allow consul UI access from the world"
   }
 
-    ingress {
+  ingress {
     from_port   = 8600
     to_port     = 8600
     protocol    = "tcp"

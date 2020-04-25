@@ -4,10 +4,6 @@ set -e
 mkdir -p /opt/monitoring
 tee /opt/monitoring/docker-compose.yml > /dev/null <<EOF
 version: "3.4"
-x-logging:
-  &default-logging
-  driver: fluentd
-
 services:
   prometheus:
     image: prom/prometheus:v2.11.2
@@ -22,7 +18,10 @@ services:
       --storage.tsdb.retention=30d
 #      --web.enable-admin-api
     restart: unless-stopped
-    logging: *default-logging
+    logging:
+      driver: fluentd
+      options:
+        tag: prometheus
   grafana:
     image: grafana/grafana:6.5.3
     ports:
@@ -31,7 +30,10 @@ services:
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - grafana_data:/var/lib/grafana
     restart: unless-stopped
-    logging: *default-logging
+    logging:
+      driver: fluentd
+      options:
+        tag: grafana
     depends_on:
       - prometheus
 
