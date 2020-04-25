@@ -247,7 +247,7 @@ ui:
   # example, setting this to "LoadBalancer" will create an external load
   # balancer (for supported K8S installations) to access the UI.
   service:
-    enabled: true
+    enabled: "-"
     type: null
     # This should be a multi-line string mapping directly to the a map of
     # the annotations to apply to the UI service

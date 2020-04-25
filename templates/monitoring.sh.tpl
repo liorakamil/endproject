@@ -74,11 +74,14 @@ scrape_configs:
 
   - job_name: 'node_exporter'
     scrape_interval: 15s
-    static_configs:
-      - targets: 
-        - '10.0.40.66:9100'
-        - '10.0.40.149:9100'
-
+    consul_sd_configs:
+      - server: '${consul_server}:8500'
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*,prometheus,.*
+        action: keep
+      - source_labels: [__meta_consul_service]
+        target_label: job
 EOF
 
 mkdir -p /opt/monitoring/grafana

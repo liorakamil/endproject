@@ -60,4 +60,15 @@ tee /etc/consul.d/jenkins-8080.json > /dev/null <<"EOF"
 }
 EOF
 
+### add prometheus discovery with consul:
+tee /etc/consul.d/node-exporter.json > /dev/null <<"EOF"
+{
+  "service":
+  {"name": "node_exporter_jenkins",
+   "tags": ["node_exporter", "prometheus"],
+   "port": 9100
+  }
+}
+EOF
+
 consul reload

@@ -130,7 +130,6 @@ systemctl daemon-reload
 systemctl enable logging.service
 systemctl start logging.service
 
-###problem?
 ### add logging service to consul
 tee /etc/consul.d/elasticsearch-9200.json > /dev/null <<"EOF"
 {
@@ -162,6 +161,17 @@ tee /etc/consul.d/elasticsearch-9200.json > /dev/null <<"EOF"
         "interval": "60s"
       }
     ]
+  }
+}
+EOF
+
+### add prometheus discovery with consul:
+tee /etc/consul.d/node-exporter.json > /dev/null <<"EOF"
+{
+  "service":
+  {"name": "node_exporter_logging",
+   "tags": ["node_exporter", "prometheus"],
+   "port": 9100
   }
 }
 EOF

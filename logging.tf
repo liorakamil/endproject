@@ -1,3 +1,7 @@
+locals {
+  logging_name = "logging"
+}
+
 resource "aws_security_group" "sg_logging" {
   name = "sg_logging"
   description = "Allow logging inbound traffic"

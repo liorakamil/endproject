@@ -1,3 +1,7 @@
+locals {
+  monitoring_name = "monitoring"
+}
+
 #Monitoring Security Group
 resource "aws_security_group" "monitoring_sg" {
   name        = "monitoring-sg"
@@ -74,6 +78,7 @@ data "template_file" "monitoring" {
   template = file("${path.module}/templates/monitoring.sh.tpl")
   vars = {
     HOSTNAME = "grafana1"
+    consul_server = aws_instance.consul_server[0].private_ip
   }
 }
 
