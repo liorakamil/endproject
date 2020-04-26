@@ -21,7 +21,7 @@ services:
     logging:
       driver: fluentd
       options:
-        tag: prometheus
+        tag: monitoring.prometheus
   grafana:
     image: grafana/grafana:6.5.3
     ports:
@@ -560,7 +560,7 @@ log_queries =
 # Metrics available at HTTP API Url /metrics
 [metrics]
 # Disable / Enable internal metrics
-;enabled           = true
+enabled           = true
 
 # Publish interval
 ;interval_seconds  = 10
