@@ -1,4 +1,4 @@
-Simple Flask Python Application
+Opsschool end-project: 
 This repo build a small prod like environment, to support deployment of a simple Flask application in an automated fashion.
 Environemt include: 
 -Simple Flask application  
