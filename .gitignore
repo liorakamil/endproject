@@ -10,7 +10,6 @@ __pycache__
 variables.tf
 db/
 draft/
-eks-init.sh
 jenkins_key
 k8s-secrets
 kubeconfig_eks-cluster-flask
