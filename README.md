@@ -18,7 +18,10 @@ Deployment:
 3. Run eks-init.sh
 
 Credits:
-1. The amazing team of Opsschool 5 https://github.com/ops-school
+1. The amazing team of Opsschool 5
+https://github.com/ops-school
+https://github.com/MadDamDam/opsschool-monitoring
 2. kiwigrid https://kiwigrid.github.io
+
 
 
