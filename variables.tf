@@ -108,12 +108,3 @@ variable "ip" {
   default = ""
   description = "my private ip"
 }
-
-#variable "flask-rds" {
-#  default = {
-#  key1 = "user"
-#   key2 = "password"
-# }
-
-#  type = map(string)
-#}

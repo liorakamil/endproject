@@ -55,60 +55,7 @@ resource "aws_security_group" "mysql_sg" {
    to_port     = 0
    protocol    = "-1"
    cidr_blocks = ["0.0.0.0/0"]
- }
-
-# egress {
-#   from_port   = 22
-#   to_port     = 22
-#   protocol    = "tcp"
-#   cidr_blocks = ["10.0.0.0/24"]
-# }
-
-#  ingress {
-#    from_port   = 0
-#    to_port     = 0
-#    protocol    = "-1"
-#    self        = true
-#    description = "Allow all inside security group"
-#  }
-
-#  ingress {
-#    from_port = 443
-#    to_port = 443
-#    protocol = "tcp"
-#    cidr_blocks = [var.ip]
-#    cidr_blocks = ["0.0.0.0/0"]
-#  }
-
-#  ingress {
-#    from_port = 8080
-#    to_port = 8080
-#    protocol = "tcp"
-#    cidr_blocks = [var.ip]
-#  }
-
-#  ingress {
-#    from_port = 5000
-#    to_port = 5000
-#    protocol = "tcp"
-#    cidr_blocks = [var.ip]
-#  }
-
-#  ingress {
-#    from_port = 22
-#    to_port = 22
-#    protocol = "tcp"
-#    cidr_blocks = [var.ip]
-#    description = "Allow ssh from my ip"
-#  }
-
-#  ingress {
-#    from_port = 2375
-#    to_port = 2375
-#    protocol = "tcp"
-#    cidr_blocks = [var.ip]
-#  }
-  # Allow all traffic to mysql port 3600 
+  } 
 
   ingress {  
     from_port = 3306

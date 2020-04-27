@@ -1,4 +1,5 @@
-Opsschool end-project: 
+# Opsschool end-project: The Elephant
+
 This repo build a small prod like environment, to support deployment of a simple Flask application in an automated fashion.
 Environemt include: 
 -Simple Flask application  
@@ -12,12 +13,25 @@ Environemt include:
 The Application:
 A webpage with two text fields: name, email. with entering the submit button, all data is stored in a mysql database. The data stored can be presented and retrieved on the webpage. 
 
-Deployment:
+## Built With
+Terraform - infastractures
+AWS - cloud provider
+
+## Getting Started: 
 1. Clone repo: endproject
-2. Init Terraform and run: terraform plan.. followed by "terraform apply..."
+
+### Deployment
+1. Init Terraform
+2. Run terraform plan -out main.tfplan, "terraform apply"
 3. Run eks-init.sh
 
-Credits:
+## Versioning
+Terraform 0.12
+Helm 3
+Consul 1.4.0 
+mysql 8.0
+
+## Acknowledgments
 1. The amazing team of Opsschool 5
 https://github.com/ops-school
 https://github.com/MadDamDam/opsschool-monitoring

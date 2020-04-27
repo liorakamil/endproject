@@ -20,3 +20,5 @@ secrets.tf
 my_conf_files/
 query-elasticsearch.sh
 templates-guy/
+*.mov
+fluentd-elasticsearch
