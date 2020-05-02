@@ -5,7 +5,7 @@ resource "aws_instance" "consul_server" {
   count                  = 3
 
   vpc_security_group_ids = [aws_security_group.opsschool_consul.id]
-  subnet_id              = module.vpc.public_subnets[0]
+  subnet_id              = element(module.vpc.public_subnets, count.index)
   iam_instance_profile   = aws_iam_instance_profile.consul-join.name
   
   tags = {
