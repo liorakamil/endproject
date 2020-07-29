@@ -28,7 +28,7 @@ helm upgrade -i fluentd kiwigrid/fluentd-elasticsearch \
     --set elasticsearch.auth.enabled=true \
     --set elasticsearch.auth.user=elastic \
     --set elasticsearch.auth.password=changeme \
-    --set elasticsearch.hosts={"elasticsearch:9200"}
+    --set elasticsearch.hosts={"elasticsearch-client:9200"}
 
 #install consul on eks
 #helm upgrade -i hashicorp ./consul-helm -f ./consul-helm/config.yaml
